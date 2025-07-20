@@ -29,7 +29,7 @@ export default function Navigation() {
     } backdrop-blur-md border-b border-border/50`}>
       <div className="max-w-6xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <div className="text-xl font-bold text-primary">AR.dev</div>
+          <div className="text-xl font-bold text-primary">Akarsh Reddy</div>
           
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-8">
