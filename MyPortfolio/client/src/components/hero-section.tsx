@@ -85,23 +85,29 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.8 }}
           >
-            <motion.span 
-              className="text-gradient block"
-              initial={{ backgroundPosition: "0% 50%" }}
-              animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              style={{ backgroundSize: "200% auto" }}
+            <motion.div 
+              className="text-white"
+              style={{
+                background: 'linear-gradient(45deg, #0ea5e9, #10b981)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                color: 'white' // fallback
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7, duration: 1 }}
             >
               Akarsh Reddy
-            </motion.span>
-            <motion.span 
-              className="text-slate-300"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.7, duration: 0.6 }}
+            </motion.div>
+            <motion.div 
+              className="text-foreground"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.9, duration: 1 }}
             >
               Chiripireddy
-            </motion.span>
+            </motion.div>
           </motion.h1>
 
           <motion.div 
