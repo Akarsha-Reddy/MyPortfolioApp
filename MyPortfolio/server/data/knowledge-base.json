@@ -1,0 +1,159 @@
+{
+    "name": "Akarsha Reddy ChiripiReddy",
+    "title": "Senior DevOps Engineer",
+    "location": "Bangalore, India",
+    "company": "Bosch Digital",
+    "yearsOfExperience": 5,
+    "email": "akarsh@example.com",
+    "summary": "Senior DevOps Engineer with 5+ years of experience specialising in cloud infrastructure, automation pipelines, Kubernetes orchestration, and site reliability engineering. Currently working at Bosch Digital, Bangalore. Expert in designing scalable, highly-available systems achieving 99.9% uptime SLA.",
+    "skills": {
+        "containerization": [
+            "Docker",
+            "Kubernetes",
+            "OpenShift",
+            "Helm",
+            "ArgoCD"
+        ],
+        "cloudPlatforms": [
+            "AWS",
+            "Azure",
+            "GCP"
+        ],
+        "cicd": [
+            "Jenkins",
+            "GitLab CI",
+            "GitHub Actions",
+            "ArgoCD",
+            "Bitbucket Pipelines"
+        ],
+        "iac": [
+            "Terraform",
+            "Ansible",
+            "CloudFormation"
+        ],
+        "monitoring": [
+            "Prometheus",
+            "Grafana",
+            "ELK Stack",
+            "CloudWatch",
+            "Datadog"
+        ],
+        "scripting": [
+            "Shell/Bash",
+            "Python",
+            "YAML"
+        ],
+        "security": [
+            "Vault (HashiCorp)",
+            "SonarQube",
+            "OWASP"
+        ],
+        "versionControl": [
+            "Git",
+            "GitOps workflow"
+        ],
+        "other": [
+            "Maven",
+            "JFrog Artifactory",
+            "Selenium",
+            "Linux"
+        ]
+    },
+    "experience": [
+        {
+            "company": "Bosch Digital",
+            "role": "Senior DevOps Engineer",
+            "period": "2022 – Present",
+            "highlights": [
+                "Automated 500+ deployments reducing manual effort by 80%",
+                "Achieved zero-downtime migrations for critical production systems",
+                "Reduced cloud infrastructure costs by 40% through right-sizing and spot instances",
+                "Designed and maintained multi-cloud Kubernetes clusters serving enterprise applications",
+                "Built GitOps workflows with ArgoCD for 20+ microservices"
+            ]
+        },
+        {
+            "company": "Publicis Sapient",
+            "role": "Associate L2",
+            "period": "2021 – 2022",
+            "highlights": [
+                "Worked on CI/CD pipeline automation using Jenkins and GitLab CI",
+                "Supported Kubernetes deployments on AWS EKS",
+                "Implemented infrastructure as code using Terraform"
+            ]
+        },
+        {
+            "company": "DXC Technology",
+            "role": "DevOps / QA Engineer",
+            "period": "2018 – 2021",
+            "highlights": [
+                "Started career as QA Engineer then transitioned to DevOps",
+                "Automated test pipelines with Selenium and Jenkins",
+                "Learned containerization and Docker fundamentals"
+            ]
+        }
+    ],
+    "projects": [
+        {
+            "name": "Multi-Cloud Kubernetes Platform",
+            "description": "Designed a unified Kubernetes platform spanning AWS, Azure and GCP for enterprise workloads with auto-scaling and self-healing capabilities.",
+            "tech": [
+                "Kubernetes",
+                "Terraform",
+                "AWS",
+                "Azure",
+                "Helm",
+                "ArgoCD"
+            ]
+        },
+        {
+            "name": "Zero-Downtime Migration Framework",
+            "description": "Built a framework for blue-green and canary deployments enabling production service migrations without downtime.",
+            "tech": [
+                "Kubernetes",
+                "Istio",
+                "Jenkins",
+                "Shell Scripting"
+            ]
+        },
+        {
+            "name": "Observability Platform",
+            "description": "Implemented full-stack observability using Prometheus, Grafana dashboards and ELK stack for 30+ microservices.",
+            "tech": [
+                "Prometheus",
+                "Grafana",
+                "ELK Stack",
+                "Alertmanager"
+            ]
+        },
+        {
+            "name": "GitOps CI/CD Pipeline",
+            "description": "Designed a GitOps-based delivery system with ArgoCD, automated image promotion and rollback capabilities for 20+ services.",
+            "tech": [
+                "ArgoCD",
+                "GitLab CI",
+                "Docker",
+                "Kubernetes",
+                "Helm"
+            ]
+        }
+    ],
+    "certifications": [
+        "AWS Certified Solutions Architect",
+        "Certified Kubernetes Administrator (CKA)",
+        "HashiCorp Terraform Associate",
+        "Microsoft Azure Fundamentals (AZ-900)"
+    ],
+    "achievements": [
+        "500+ automated deployments with zero production incidents",
+        "99.9% uptime SLA maintained across all managed services",
+        "40% cost reduction achieved through cloud optimization",
+        "Led a 4-person DevOps team at Bosch Digital",
+        "Open source contributions to Helm charts and Terraform modules"
+    ],
+    "contactLinks": {
+        "linkedin": "https://linkedin.com/in/akarshreddy",
+        "github": "https://github.com/akarshreddy",
+        "email": "akarsh@example.com"
+    }
+}

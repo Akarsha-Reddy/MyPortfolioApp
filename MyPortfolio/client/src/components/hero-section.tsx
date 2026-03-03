@@ -1,239 +1,236 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { useScrollAnimation, useMousePosition } from "@/hooks/use-scroll-animation";
-import boschLogo from "@assets/Bosch_1752968584869.jpg";
+import { useRef } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { MagneticButton } from "@/components/ui/magnetic-button";
+import { TypeAnimation } from "react-type-animation";
+import K8sCluster from "@/components/k8s-cluster";
+
+const STATS = [
+  { value: "5+", label: "Years Exp.", icon: "⚡" },
+  { value: "99.9%", label: "Uptime SLA", icon: "🛡️" },
+  { value: "500+", label: "Deployments", icon: "🚀" },
+  { value: "40%", label: "Cost Saved", icon: "💰" },
+];
 
 export default function HeroSection() {
-  const [typedText, setTypedText] = useState("");
-  const fullText = "Senior DevOps Engineer";
-  const [ref, inView] = useScrollAnimation(0.3);
-  const mousePosition = useMousePosition();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
-  useEffect(() => {
-    let index = 0;
-    const timer = setInterval(() => {
-      if (index < fullText.length) {
-        setTypedText(fullText.slice(0, index + 1));
-        index++;
-      } else {
-        clearInterval(timer);
-      }
-    }, 100);
+  const floatX = useSpring(useTransform(mouseX, [-1, 1], [-8, 8]), { stiffness: 60, damping: 22 });
+  const floatY = useSpring(useTransform(mouseY, [-1, 1], [-5, 5]), { stiffness: 60, damping: 22 });
 
-    return () => clearInterval(timer);
-  }, []);
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    const { width, height, left, top } = containerRef.current.getBoundingClientRect();
+    mouseX.set(((e.clientX - left) / width) * 2 - 1);
+    mouseY.set(((e.clientY - top) / height) * 2 - 1);
+  };
 
   return (
-    <section ref={ref} id="home" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
-      {/* Parallax Background Elements */}
+    <section
+      id="home"
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden aurora-bg"
+      style={{ paddingTop: "80px" }}
+    >
+      <div className="grain-overlay" />
+
+      {/* Ambient glow — centered */}
       <motion.div
-        className="absolute inset-0 z-0"
-        style={{
-          background: `radial-gradient(circle at ${mousePosition.x * 0.05}% ${mousePosition.y * 0.05}%, rgba(59, 130, 246, 0.15) 0%, transparent 70%)`
-        }}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full blur-3xl pointer-events-none"
+        style={{ background: "radial-gradient(circle, rgba(14,165,233,0.08) 0%, rgba(16,185,129,0.04) 50%, transparent 70%)" }}
+        animate={{ scale: [1, 1.1, 1], rotate: [0, 4, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
       />
-      
-      <div className="max-w-6xl mx-auto px-4 text-center relative z-10">
+
+      <div className="relative z-10 flex flex-col items-center text-center px-6 w-full max-w-5xl">
+
+        {/* Status badge */}
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold border mb-6"
+          style={{ color: "#0ea5e9", borderColor: "rgba(14,165,233,0.3)", background: "rgba(14,165,233,0.07)" }}
+          initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
+          transition={{ delay: 0.2, duration: 0.6 }}
         >
-          {/* Developer Avatar */}
-          <motion.div 
-            className="mb-8 relative inline-block"
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          >
-            <motion.div 
-              className="w-32 h-32 mx-auto bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-4xl font-bold shadow-2xl"
-              animate={{ 
-                y: [0, -10, 0],
-                rotate: [0, 5, -5, 0]
-              }}
-              transition={{ 
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              whileHover={{ scale: 1.1 }}
-            >
-              AR
-            </motion.div>
-            <motion.div 
-              className="absolute -bottom-2 -right-2 bg-secondary text-xs px-2 py-1 rounded-full"
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8 }}
-            >
-              <div className="flex items-center">
-                <motion.div 
-                  className="w-2 h-2 bg-green-400 rounded-full mr-1"
-                  animate={{ scale: [1, 1.3, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                Online
-              </div>
-            </motion.div>
-          </motion.div>
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+          </span>
+          Available for Infrastructure Challenges
+        </motion.div>
 
-          <motion.h1 
-            className="text-5xl md:text-7xl font-black mb-4"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-          >
-            <motion.div 
-              className="text-white"
-              style={{
-                background: 'linear-gradient(45deg, #0ea5e9, #10b981)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                color: 'white' // fallback
-              }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7, duration: 1 }}
-            >
-              Akarsh Reddy
-            </motion.div>
-            <motion.div 
-              className="text-foreground"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.9, duration: 1 }}
-            >
-              Chiripireddy
-            </motion.div>
-          </motion.h1>
-
-          <motion.div 
-            className="text-xl md:text-2xl text-slate-400 mb-8"
+        {/* NAME — uses layoutId="hero-name" to receive the FLIP transition from intro */}
+        <motion.div layoutId="hero-name" className="mb-4">
+          <motion.h1
+            className="font-black leading-none tracking-tight"
+            style={{ fontSize: "clamp(3.2rem, 8vw, 7rem)" }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.6 }}
+            transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            <motion.span 
-              className="typing-animation"
-              initial={{ width: 0 }}
-              animate={{ width: "auto" }}
-              transition={{ delay: 1.2, duration: 2 }}
+            <span className="text-white">Akarsha </span>
+            <motion.span
+              style={{
+                background: "linear-gradient(135deg, #0ea5e9 0%, #10b981 50%, #0ea5e9 100%)",
+                backgroundSize: "200% auto",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+              animate={{ backgroundPosition: ["0% center", "200% center", "0% center"] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
             >
-              {typedText}
+              Reddy
             </motion.span>
-            <span className="mx-2">|</span>
-            <motion.span 
-              className="text-primary"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.5 }}
+            <br />
+            <span
+              className="font-black"
+              style={{
+                fontSize: "0.55em",
+                letterSpacing: "0.06em",
+                background: "linear-gradient(135deg, rgba(148,163,184,0.7) 0%, #0ea5e9 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
             >
-              Infrastructure Architect
-            </motion.span>
-            <span className="mx-2">|</span>
-            <motion.span 
-              className="text-secondary"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.8 }}
-            >
-              Automation Evangelist
-            </motion.span>
-          </motion.div>
+              ChiripiReddy
+            </span>
+          </motion.h1>
+        </motion.div>
 
-          <motion.div 
-            className="flex flex-col md:flex-row items-center justify-center gap-4 mb-12"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2, duration: 0.8 }}
-          >
-            {[
-              { icon: "location", text: "Bangalore, India", color: "text-primary" },
-              { icon: "experience", text: "5+ Years Experience", color: "text-secondary" },
-              { icon: "company", text: "Bosch Digital", color: "text-accent", logo: boschLogo }
-            ].map((item, index) => (
-              <motion.div 
-                key={item.text}
-                className="flex items-center text-lg"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 2.2 + (index * 0.2), duration: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-              >
-                {item.logo ? (
-                  <div className="w-6 h-6 bg-white rounded flex items-center justify-center mr-2 p-1">
-                    <img 
-                      src={item.logo} 
-                      alt="Bosch logo"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                ) : (
-                  <svg className={`w-5 h-5 ${item.color} mr-2`} fill="currentColor" viewBox="0 0 20 20">
-                    {item.icon === "location" && (
-                      <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                    )}
-                    {item.icon === "experience" && (
-                      <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h2zm4-3a1 1 0 00-1 1v1h2V4a1 1 0 00-1-1zm-3 4a1 1 0 100 2 1 1 0 000-2zm5 1a1 1 0 11-2 0 1 1 0 012 0z" clipRule="evenodd" />
-                    )}
-                  </svg>
-                )}
-                {item.text}
-              </motion.div>
-            ))}
-          </motion.div>
+        {/* Typewriter */}
+        <motion.div
+          className="flex items-center justify-center gap-2 text-lg text-slate-400 font-medium mb-6"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45, duration: 0.6 }}
+        >
+          <span className="text-slate-600">›</span>
+          <TypeAnimation
+            sequence={[
+              "Senior DevOps Engineer", 2000,
+              "Infrastructure Architect", 2000,
+              "Automation Evangelist", 2000,
+              "Cloud Native Builder", 2000,
+              "Site Reliability Engineer", 2000,
+            ]}
+            wrapper="span"
+            speed={55}
+            repeat={Infinity}
+          />
+          <motion.span
+            className="w-0.5 h-5 inline-block"
+            style={{ background: "#0ea5e9" }}
+            animate={{ opacity: [1, 0, 1] }}
+            transition={{ duration: 0.9, repeat: Infinity }}
+          />
+        </motion.div>
 
-          <motion.div 
-            className="flex flex-col md:flex-row gap-4 justify-center"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 2.8, duration: 0.6 }}
-          >
+        {/* K8s cluster — centered centerpiece */}
+        <motion.div
+          className="relative flex items-center justify-center w-full"
+          style={{ x: floatX, y: floatY }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5, duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <div
+            className="absolute inset-0 rounded-full blur-3xl pointer-events-none"
+            style={{ background: "radial-gradient(ellipse at center, rgba(14,165,233,0.07) 0%, transparent 65%)" }}
+          />
+          <K8sCluster />
+        </motion.div>
+
+        {/* Stats chips */}
+        <motion.div
+          className="flex flex-wrap justify-center gap-3 mb-8 -mt-4"
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
+        >
+          {STATS.map((stat) => (
             <motion.div
-              whileHover={{ scale: 1.05, rotate: 2 }}
-              whileTap={{ scale: 0.95 }}
+              key={stat.label}
+              className="flex items-center gap-2.5 px-4 py-2 rounded-full border"
+              style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.07)" }}
+              whileHover={{ scale: 1.05, borderColor: "rgba(14,165,233,0.35)" }}
             >
-              <Button asChild className="bg-gradient-to-r from-primary to-secondary hover:from-secondary hover:to-primary px-8 py-3 rounded-full transition-all duration-300 font-semibold">
-                <a href="#contact">Let's Connect</a>
-              </Button>
+              <span className="text-sm">{stat.icon}</span>
+              <span className="text-sm font-black" style={{ color: "#0ea5e9" }}>{stat.value}</span>
+              <span className="text-xs text-slate-500 font-medium">{stat.label}</span>
             </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05, rotate: -2 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button variant="outline" asChild className="border-2 border-primary text-primary hover:bg-primary hover:text-white px-8 py-3 rounded-full transition-all duration-300 font-semibold">
-                <a href="/resume.pdf" download>
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Download Resume
-                </a>
-              </Button>
-            </motion.div>
+          ))}
+          <motion.div className="flex items-center gap-2 px-4 py-2 rounded-full border" style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.07)" }}>
+            <span className="text-sm">📍</span>
+            <span className="text-xs text-slate-500 font-medium">Bangalore · Bosch Digital</span>
           </motion.div>
+        </motion.div>
+
+        {/* CTA buttons */}
+        <motion.div
+          className="flex flex-wrap items-center justify-center gap-3 pb-12"
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.85, duration: 0.6 }}
+        >
+          <MagneticButton
+            strength={0.4}
+            className="relative inline-flex items-center justify-center px-8 py-3.5 rounded-full font-semibold text-white overflow-hidden text-sm"
+            style={{ background: "linear-gradient(135deg, #0ea5e9, #10b981)", boxShadow: "0 0 30px rgba(14,165,233,0.4)" } as React.CSSProperties}
+            onClick={() => document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })}
+          >
+            <motion.span
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+              initial={{ x: "-120%" }}
+              animate={{ x: "220%" }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+            />
+            <span className="relative flex items-center gap-2">
+              View My Work
+              <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.2, repeat: Infinity }}>→</motion.span>
+            </span>
+          </MagneticButton>
+
+          <MagneticButton
+            strength={0.3}
+            className="relative inline-flex items-center justify-center px-8 py-3.5 rounded-full font-semibold border-2 text-sm"
+            style={{ borderColor: "rgba(14,165,233,0.4)", color: "#0ea5e9", background: "rgba(14,165,233,0.06)" } as React.CSSProperties}
+            onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
+          >
+            Let's Connect
+          </MagneticButton>
+
+          <MagneticButton
+            strength={0.2}
+            className="relative inline-flex items-center justify-center px-6 py-3.5 rounded-full font-semibold border text-sm"
+            style={{ borderColor: "rgba(255,255,255,0.1)", color: "rgba(148,163,184,0.7)", background: "rgba(255,255,255,0.02)" } as React.CSSProperties}
+          >
+            <a href="/Akarsha_DevOpsEngineer_Banglore_1752959237651.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5">
+              Resume ↗
+            </a>
+          </MagneticButton>
         </motion.div>
       </div>
 
       {/* Scroll indicator */}
-      <motion.div 
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ 
-          opacity: 1, 
-          y: [0, 10, 0]
-        }}
-        transition={{ 
-          opacity: { delay: 3, duration: 0.5 },
-          y: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-        }}
-        whileHover={{ scale: 1.2 }}
+      <motion.div
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2 }}
       >
-        <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
+        <p className="text-[9px] uppercase tracking-[0.3em] font-bold" style={{ color: "rgba(148,163,184,0.2)" }}>scroll</p>
+        <motion.div className="w-5 h-8 border-2 rounded-full flex justify-center" style={{ borderColor: "rgba(14,165,233,0.2)" }}>
+          <motion.div
+            className="w-1 h-2.5 rounded-full mt-1.5"
+            style={{ background: "#0ea5e9" }}
+            animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
+        </motion.div>
       </motion.div>
     </section>
   );

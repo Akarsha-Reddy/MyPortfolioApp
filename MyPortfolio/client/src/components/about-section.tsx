@@ -1,110 +1,359 @@
+import { useRef, useState, useEffect } from "react";
+import { motion, useInView } from "framer-motion";
 import boschLogo from "@assets/Bosch_1752968584869.jpg";
 import publicisLogo from "@assets/PublicisSapient_1752968584870.jpg";
 import dxcLogo from "@assets/DXCTechnology_1752968584870.jpg";
 
-export default function AboutSection() {
+/* ─── Animated counter (safe isolated hook) ─── */
+function useCounter(target: number, duration: number, active: boolean) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!active) return;
+    let current = 0;
+    const step = Math.ceil(target / (duration / 16));
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      setCount(current);
+      if (current >= target) clearInterval(timer);
+    }, 16);
+    return () => clearInterval(timer);
+  }, [active, target, duration]);
+  return count;
+}
+
+/* ─── Stat card as isolated component ─── */
+function StatCard({
+  value, suffix, label, color, icon, active, delay,
+}: {
+  value: number; suffix: string; label: string; color: string; icon: string; active: boolean; delay: number;
+}) {
+  const count = useCounter(value, 1600, active);
   return (
-    <section id="about" className="py-20 bg-slate-800">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+    <motion.div
+      className="relative p-6 rounded-2xl border text-center overflow-hidden group cursor-default"
+      style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={active ? { opacity: 1, scale: 1 } : {}}
+      transition={{ delay, duration: 0.5, type: "spring", stiffness: 200 }}
+      whileHover={{ scale: 1.04, borderColor: color + "55" }}
+    >
+      <div
+        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{ background: `radial-gradient(circle at center, ${color}12, transparent 70%)` }}
+      />
+      <motion.div
+        className="absolute top-0 left-0 right-0 h-0.5"
+        style={{ background: color }}
+        initial={{ scaleX: 0 }}
+        animate={active ? { scaleX: 1 } : {}}
+        transition={{ delay: delay + 0.2, duration: 0.6 }}
+      />
+      <div className="relative">
+        <div className="text-2xl mb-2">{icon}</div>
+        <div className="text-4xl font-black leading-none mb-2" style={{ color }}>
+          {count}{suffix}
+        </div>
+        <div className="text-xs text-slate-400 font-medium">{label}</div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Data ─── */
+const STATS = [
+  { value: 5, suffix: "+", label: "Years of Experience", color: "#0ea5e9", icon: "⚡" },
+  { value: 100, suffix: "+", label: "Pipelines Automated", color: "#10b981", icon: "🔄" },
+  { value: 50, suffix: "+", label: "Projects Delivered", color: "#f59e0b", icon: "🚀" },
+  { value: 3, suffix: "", label: "Enterprise Companies", color: "#a855f7", icon: "🏢" },
+];
+
+const JOURNEY = [
+  { year: "2018", title: "The Spark", description: "Joined DXC Technology as DevOps Engineer. First CI/CD pipeline shipped. Fell in love with automation.", color: "#0ea5e9", icon: "💡" },
+  { year: "2021", title: "Level Up", description: "Moved to Publicis Sapient as Associate L2. Scaled infrastructure across global clients with Kubernetes & Terraform.", color: "#10b981", icon: "🎯" },
+  { year: "2022", title: "The Peak", description: "Joined Bosch Digital as Senior DevOps Engineer. Leading infrastructure strategies and cloud-native migrations.", color: "#a855f7", icon: "🏆" },
+  { year: "Now", title: "Beyond", description: "Making deployments invisible. Building systems that scale, self-heal, and make developers' lives effortless.", color: "#f59e0b", icon: "🌟" },
+];
+
+const TERMINAL_LINES = [
+  { prompt: "$", cmd: "whoami", out: "akarsh-reddy-chiripireddy", delay: 0.5 },
+  { prompt: "$", cmd: "cat /etc/role", out: "Senior DevOps Engineer @ Bosch Digital", delay: 1.1 },
+  { prompt: "$", cmd: "kubectl get pods --all", out: "50+ pods · 99.9% uptime", delay: 1.7 },
+  { prompt: "$", cmd: "terraform plan", out: "✅ 100+ resources · 0 errors", delay: 2.3 },
+  { prompt: "$", cmd: "echo $PASSION", out: "Automation · Cloud · Infrastructure", delay: 2.9 },
+  { prompt: "▋", cmd: "", out: "", delay: 3.5 },
+];
+
+const STORY_CARDS = [
+  {
+    highlight: "Electronics & Communication Engineering",
+    color: "#0ea5e9",
+    text: "My journey started with circuits and signals, but fate had bigger plans — automation, pipelines, and cloud infrastructure became my true calling.",
+  },
+  {
+    highlight: "From Selenium scripts to Kubernetes clusters",
+    color: "#10b981",
+    text: "I evolved from writing first test scripts into orchestrating complex CI/CD pipelines across global enterprises. Infrastructure is my language.",
+  },
+  {
+    highlight: "Currently at Bosch Digital",
+    color: "#a855f7",
+    text: "Blending cutting-edge DevOps practices with real-world business impact. My mission: making deployments so smooth, they're practically invisible.",
+  },
+];
+
+const COMPANIES = [
+  { src: boschLogo, name: "Bosch Digital", year: "2022–Now", color: "#0ea5e9" },
+  { src: publicisLogo, name: "Publicis Sapient", year: "2021–2022", color: "#10b981" },
+  { src: dxcLogo, name: "DXC Technology", year: "2018–2021", color: "#a855f7" },
+];
+
+/* ─── Main Component ─── */
+export default function AboutSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(sectionRef, { once: true, margin: "-80px" });
+  const statsInView = useInView(statsRef, { once: true, margin: "-40px" });
+
+  return (
+    <section
+      ref={sectionRef}
+      id="about"
+      className="py-28 relative overflow-hidden"
+      style={{ background: "linear-gradient(180deg, hsl(222,84%,4.9%) 0%, rgba(14,165,233,0.04) 50%, hsl(222,84%,4.9%) 100%)" }}
+    >
+      {/* Ambient background orbs */}
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          className="absolute top-20 right-10 w-72 h-72 rounded-full blur-3xl opacity-10"
+          style={{ background: "radial-gradient(circle, #a855f7, transparent)" }}
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 8, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute bottom-20 left-10 w-64 h-64 rounded-full blur-3xl opacity-10"
+          style={{ background: "radial-gradient(circle, #0ea5e9, transparent)" }}
+          animate={{ scale: [1.2, 1, 1.2] }}
+          transition={{ duration: 10, repeat: Infinity }}
+        />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+
+        {/* ── Section Header ── */}
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 40 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <motion.span
+            className="inline-block text-xs font-bold tracking-[0.3em] uppercase mb-4 px-4 py-1.5 rounded-full border"
+            style={{ color: "#0ea5e9", borderColor: "rgba(14,165,233,0.3)", background: "rgba(14,165,233,0.08)" }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={inView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ delay: 0.1, duration: 0.5 }}
+          >
+            About Me
+          </motion.span>
+          <h2 className="text-5xl md:text-6xl font-black leading-tight">
+            <motion.span
+              className="block text-white"
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.2, duration: 0.7 }}
+            >
+              The{" "}
+              <span style={{ background: "linear-gradient(135deg, #0ea5e9, #a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                Infrastructure
+              </span>
+            </motion.span>
+            <motion.span
+              className="block text-white"
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.35, duration: 0.7 }}
+            >
+              Whisperer
+            </motion.span>
+          </h2>
+        </motion.div>
+
+        {/* ── Two column layout ── */}
+        <div className="grid lg:grid-cols-2 gap-16 items-start mb-20">
+
+          {/* LEFT: Story cards + company strip */}
           <div>
-            <h2 className="text-4xl font-bold mb-6">
-              The <span className="text-primary">Infrastructure</span> Whisperer
-            </h2>
-            <div className="space-y-4 text-slate-300 text-lg leading-relaxed">
-              <p>
-                Started my journey in <strong className="text-secondary">Electronics & Communication Engineering</strong>, but fate had different plans. Like many tech enthusiasts, I discovered my true calling in the world of automation and infrastructure.
-              </p>
-              <p>
-                From writing my first <strong className="text-accent">Selenium test scripts</strong> to orchestrating complex <strong className="text-primary">CI/CD pipelines</strong> across global enterprises, I've evolved into what I like to call an "Infrastructure Whisperer" - someone who speaks fluent DevOps and makes servers purr.
-              </p>
-              <div className="flex items-start space-x-3">
-                <div className="w-8 h-8 bg-white rounded flex items-center justify-center p-1 mt-1 flex-shrink-0">
-                  <img 
-                    src={boschLogo} 
-                    alt="Bosch logo"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <p>
-                  Currently crafting digital experiences at <strong className="text-violet">Bosch Digital</strong>, where I blend cutting-edge DevOps practices with real-world business impact. My mission? Making deployments so smooth, they're practically invisible.
+            {STORY_CARDS.map((card, i) => (
+              <motion.div
+                key={i}
+                className="mb-6 p-5 rounded-2xl border relative overflow-hidden group"
+                style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}
+                initial={{ opacity: 0, x: -40 }}
+                animate={inView ? { opacity: 1, x: 0 } : {}}
+                transition={{ delay: 0.3 + i * 0.15, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                whileHover={{ borderColor: card.color + "44", scale: 1.01 }}
+              >
+                <motion.div
+                  className="absolute left-0 top-0 bottom-0 w-1 rounded-l-2xl"
+                  style={{ background: card.color }}
+                  initial={{ scaleY: 0 }}
+                  animate={inView ? { scaleY: 1 } : {}}
+                  transition={{ delay: 0.5 + i * 0.15, duration: 0.5 }}
+                />
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
+                  style={{ background: `radial-gradient(circle at 30% 50%, ${card.color}08, transparent 70%)` }}
+                />
+                <p className="text-slate-400 text-sm leading-relaxed pl-3">
+                  <strong style={{ color: card.color }}>{card.highlight}</strong>{" "}— {card.text}
                 </p>
-              </div>
-            </div>
+              </motion.div>
+            ))}
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-8">
-              <div className="text-center p-4 bg-slate-900 rounded-lg">
-                <div className="text-2xl font-bold text-primary">5+</div>
-                <div className="text-sm text-slate-400">Years</div>
+            {/* Company logos */}
+            <motion.div
+              className="mt-8 p-5 rounded-2xl border"
+              style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.8, duration: 0.6 }}
+            >
+              <p className="text-xs font-semibold tracking-widest uppercase text-slate-500 mb-4">Companies I've shaped</p>
+              <div className="flex items-center gap-4 flex-wrap">
+                {COMPANIES.map((co, i) => (
+                  <motion.div
+                    key={co.name}
+                    className="flex items-center gap-2.5 cursor-default group"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={inView ? { opacity: 1, scale: 1 } : {}}
+                    transition={{ delay: 0.9 + i * 0.1, duration: 0.4 }}
+                    whileHover={{ scale: 1.05 }}
+                  >
+                    <div
+                      className="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1.5"
+                      style={{ boxShadow: `0 0 0 1px ${co.color}33` }}
+                    >
+                      <img src={co.src} alt={co.name} className="w-full h-full object-contain" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-white leading-none">{co.name}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{co.year}</p>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-              <div className="text-center p-4 bg-slate-900 rounded-lg">
-                <div className="text-2xl font-bold text-secondary">100+</div>
-                <div className="text-sm text-slate-400">Pipelines</div>
-              </div>
-              <div className="text-center p-4 bg-slate-900 rounded-lg">
-                <div className="text-2xl font-bold text-accent">4</div>
-                <div className="text-sm text-slate-400">Companies</div>
-              </div>
-            </div>
-
-            {/* Company Logos */}
-            <div className="mt-8">
-              <h4 className="text-lg font-semibold mb-4 text-slate-400">Trusted by leading organizations</h4>
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="bg-white rounded-lg p-3 w-20 h-16 flex items-center justify-center">
-                  <img 
-                    src={boschLogo} 
-                    alt="Bosch logo"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="bg-white rounded-lg p-3 w-20 h-16 flex items-center justify-center">
-                  <img 
-                    src={publicisLogo} 
-                    alt="Publicis Sapient logo"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="bg-white rounded-lg p-3 w-20 h-16 flex items-center justify-center">
-                  <img 
-                    src={dxcLogo} 
-                    alt="DXC Technology logo"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-              </div>
-            </div>
+            </motion.div>
           </div>
 
-          <div className="relative">
-            <div className="relative overflow-hidden rounded-2xl shadow-2xl">
-              <img 
-                src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&h=600" 
-                alt="Modern DevOps workspace" 
-                className="w-full h-auto rounded-2xl" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent"></div>
-              
-              {/* Floating tech icons */}
-              <div className="absolute top-4 right-4 bg-primary/20 backdrop-blur-sm px-3 py-2 rounded-full">
-                <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M18.75 8.25L12 2.25l-6.75 6H9v9h6v-9h3.75z"/>
-                </svg>
+          {/* RIGHT: Terminal + Timeline */}
+          <div className="space-y-8">
+            {/* Terminal */}
+            <motion.div
+              className="rounded-2xl overflow-hidden border"
+              style={{ borderColor: "rgba(255,255,255,0.08)", background: "#0d1117" }}
+              initial={{ opacity: 0, x: 40 }}
+              animate={inView ? { opacity: 1, x: 0 } : {}}
+              transition={{ delay: 0.4, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div
+                className="flex items-center gap-2 px-4 py-3 border-b"
+                style={{ borderColor: "rgba(255,255,255,0.06)", background: "#161b22" }}
+              >
+                {["#ff5f57", "#febc2e", "#28c840"].map((c) => (
+                  <div key={c} className="w-3 h-3 rounded-full" style={{ background: c }} />
+                ))}
+                <span className="ml-2 text-xs text-slate-500 font-mono">akarsh@devops ~ bash</span>
               </div>
-              <div className="absolute bottom-4 left-4 bg-secondary/20 backdrop-blur-sm px-3 py-2 rounded-full">
-                <svg className="w-6 h-6 text-secondary" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                </svg>
+              <div className="p-5 font-mono text-sm space-y-2">
+                {TERMINAL_LINES.map((line, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={inView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ delay: line.delay, duration: 0.4 }}
+                  >
+                    {line.cmd ? (
+                      <div>
+                        <span style={{ color: "#10b981" }}>{line.prompt} </span>
+                        <span className="text-white">{line.cmd}</span>
+                        {line.out && <div className="text-slate-400 mt-0.5 ml-2">→ {line.out}</div>}
+                      </div>
+                    ) : (
+                      <motion.span
+                        className="text-white"
+                        animate={{ opacity: [1, 0, 1] }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      >
+                        {line.prompt}
+                      </motion.span>
+                    )}
+                  </motion.div>
+                ))}
               </div>
-              <div className="absolute top-1/2 left-4 bg-accent/20 backdrop-blur-sm px-3 py-2 rounded-full">
-                <svg className="w-6 h-6 text-accent" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65z"/>
-                </svg>
+            </motion.div>
+
+            {/* Timeline */}
+            <motion.div
+              className="relative"
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 1 } : {}}
+              transition={{ delay: 0.7, duration: 0.6 }}
+            >
+              <p className="text-xs font-semibold tracking-widest uppercase text-slate-500 mb-5">Career Timeline</p>
+              <div className="absolute left-3 top-8 bottom-0 w-px" style={{ background: "linear-gradient(to bottom, #0ea5e9, #a855f7, transparent)" }} />
+              <div className="space-y-4 pl-10">
+                {JOURNEY.map((item, i) => (
+                  <motion.div
+                    key={i}
+                    className="relative"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={inView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ delay: 0.8 + i * 0.12, duration: 0.5 }}
+                  >
+                    <motion.div
+                      className="absolute -left-7 top-3 w-3 h-3 rounded-full border-2"
+                      style={{ borderColor: item.color, background: item.color + "33" }}
+                      initial={{ scale: 0 }}
+                      animate={inView ? { scale: 1 } : {}}
+                      transition={{ delay: 0.9 + i * 0.12, duration: 0.4, type: "spring" }}
+                    />
+                    <div
+                      className="p-4 rounded-xl border transition-all duration-300"
+                      style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-base">{item.icon}</span>
+                        <span className="text-xs font-bold" style={{ color: item.color }}>{item.year}</span>
+                        <span className="text-sm font-semibold text-white">{item.title}</span>
+                      </div>
+                      <p className="text-xs text-slate-400 leading-relaxed">{item.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
+
+        {/* ── Stats Row ── */}
+        <div ref={statsRef}>
+          <motion.div
+            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+            initial={{ opacity: 0, y: 30 }}
+            animate={statsInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {STATS.map((stat, i) => (
+              <StatCard
+                key={i}
+                {...stat}
+                active={statsInView}
+                delay={i * 0.1}
+              />
+            ))}
+          </motion.div>
+        </div>
+
       </div>
     </section>
   );

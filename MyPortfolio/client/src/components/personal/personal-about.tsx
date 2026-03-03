@@ -1,182 +1,215 @@
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import { Heart, MapPin, Calendar, Smile, Coffee, Music, Book, Camera } from "lucide-react";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { MapPin, Calendar, Smile, Coffee, Music, Book, Camera } from "lucide-react";
+
+const PERSONAL_STATS = [
+  { emoji: "☕", icon: Coffee, label: "Cups of Coffee", value: "∞", color: "#f59e0b" },
+  { emoji: "📖", icon: Book, label: "Books This Year", value: "23", color: "#0ea5e9" },
+  { emoji: "🎵", icon: Music, label: "Fav Playlists", value: "47", color: "#a855f7" },
+  { emoji: "📸", icon: Camera, label: "Photos Captured", value: "2.1k", color: "#10b981" },
+];
+
+const PERSONAL_VALUES = [
+  { icon: "🎯", title: "Authenticity", description: "Being true to myself and others in everything I do", color: "#a855f7" },
+  { icon: "🌱", title: "Growth", description: "Constantly learning and evolving as a person", color: "#10b981" },
+  { icon: "🤝", title: "Connection", description: "Building meaningful relationships with people", color: "#0ea5e9" },
+  { icon: "🎨", title: "Creativity", description: "Finding unique ways to express and solve problems", color: "#f59e0b" },
+  { icon: "🗺️", title: "Adventure", description: "Embracing new experiences and stepping out of my comfort zone", color: "#ec4899" },
+  { icon: "🙏", title: "Gratitude", description: "Appreciating the small moments that make life beautiful", color: "#8b5cf6" },
+];
+
+const STORY_LINES = [
+  "Hi! I'm Akarsh Reddy Chiripireddy — but just call me Akarsh.",
+  "I believe life is too short to not pursue what makes your heart sing.",
+  "When I'm not deep in the tech world, you'll find me exploring coffee shops, getting lost in a good book, or planning my next adventure.",
+  "What drives me? Every day is an opportunity to learn something new, to make someone smile, or to create something beautiful.",
+];
 
 export default function PersonalAbout() {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        delayChildren: 0.2,
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.8, ease: "easeOut" }
-    }
-  };
-
-  const personalStats = [
-    { icon: Coffee, label: "Cups of Coffee", value: "∞", color: "from-amber-500 to-orange-600" },
-    { icon: Book, label: "Books Read This Year", value: "23", color: "from-blue-500 to-indigo-600" },
-    { icon: Music, label: "Favorite Playlists", value: "47", color: "from-purple-500 to-pink-600" },
-    { icon: Camera, label: "Photos Captured", value: "2.1k", color: "from-emerald-500 to-teal-600" },
-  ];
-
-  const personalValues = [
-    { title: "Authenticity", description: "Being true to myself and others in everything I do" },
-    { title: "Growth", description: "Constantly learning and evolving as a person" },
-    { title: "Connection", description: "Building meaningful relationships with people" },
-    { title: "Creativity", description: "Finding unique ways to express myself and solve problems" },
-    { title: "Adventure", description: "Embracing new experiences and stepping out of my comfort zone" },
-    { title: "Gratitude", description: "Appreciating the small moments that make life beautiful" },
-  ];
+  const sectionRef = useRef<HTMLElement>(null);
+  const inView = useInView(sectionRef, { once: true, margin: "-80px" });
 
   return (
-    <section id="personal-about" className="py-20 relative">
-      <div className="max-w-6xl mx-auto px-6">
+    <section
+      ref={sectionRef}
+      id="personal-about"
+      className="py-28 relative overflow-hidden"
+      style={{ background: "linear-gradient(180deg, hsl(222,84%,4.9%) 0%, rgba(236,72,153,0.04) 50%, hsl(222,84%,4.9%) 100%)" }}
+    >
+      {/* Ambient orb */}
+      <div className="absolute inset-0 pointer-events-none">
         <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-          className="space-y-16"
+          className="absolute top-1/2 left-0 w-96 h-96 rounded-full blur-3xl opacity-[0.06]"
+          style={{ background: "radial-gradient(circle, #ec4899, transparent)" }}
+          animate={{ scale: [1, 1.25, 1] }}
+          transition={{ duration: 12, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute top-1/3 right-0 w-72 h-72 rounded-full blur-3xl opacity-[0.05]"
+          style={{ background: "radial-gradient(circle, #a855f7, transparent)" }}
+          animate={{ scale: [1.1, 1, 1.1] }}
+          transition={{ duration: 9, repeat: Infinity }}
+        />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+
+        {/* Header */}
+        <motion.div
+          className="text-center mb-20"
+          initial={{ opacity: 0, y: 40 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          {/* Section Header */}
-          <motion.div variants={itemVariants} className="text-center space-y-4">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Heart className="w-8 h-8 text-violet-400" />
-              <h2 className="text-4xl md:text-5xl font-bold text-gradient">About Me</h2>
-            </div>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Behind the screens and beyond the code, here's who I really am
-            </p>
-          </motion.div>
+          <motion.span
+            className="inline-block text-xs font-bold tracking-[0.3em] uppercase mb-4 px-4 py-1.5 rounded-full border"
+            style={{ color: "#ec4899", borderColor: "rgba(236,72,153,0.3)", background: "rgba(236,72,153,0.08)" }}
+          >
+            Beyond the Code
+          </motion.span>
+          <h2 className="text-5xl md:text-6xl font-black text-white">
+            About{" "}
+            <span style={{ background: "linear-gradient(135deg, #ec4899, #a855f7)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              The Real Me
+            </span>
+          </h2>
+          <p className="text-slate-400 text-lg mt-4 max-w-lg mx-auto">
+            Behind the screens and beyond the code — here's who I really am
+          </p>
+        </motion.div>
 
-          {/* Personal Story */}
-          <motion.div variants={itemVariants} className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-foreground">My Story</h3>
-              <div className="space-y-4 text-muted-foreground leading-relaxed">
-                <p>
-                  Hi there! I'm Akarsh Reddy Chiripireddy, but you can call me Akarsh. 
-                  I'm someone who believes that life is too short to not pursue what makes your heart sing.
-                </p>
-                <p>
-                  When I'm not diving deep into the tech world, you'll find me exploring new coffee shops, 
-                  getting lost in a good book, or planning my next adventure. I have an insatiable curiosity 
-                  about the world and the people in it.
-                </p>
-                <p>
-                  What drives me? The belief that every day is an opportunity to learn something new, 
-                  to make someone smile, or to create something beautiful. I'm passionate about 
-                  connecting with people and sharing stories that matter.
-                </p>
-              </div>
-              
-              <div className="flex flex-wrap gap-4 pt-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="w-4 h-4 text-violet-400" />
-                  Based in India
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Calendar className="w-4 h-4 text-violet-400" />
-                  Born in the 90s
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Smile className="w-4 h-4 text-violet-400" />
-                  Optimist at heart
-                </div>
-              </div>
-            </div>
-
+        {/* Story + Visual Panel */}
+        <div className="grid md:grid-cols-2 gap-12 items-center mb-20">
+          {/* Left — story */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.2, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="space-y-5"
+          >
+            <h3 className="text-2xl font-bold text-white">My Story</h3>
+            {STORY_LINES.map((line, i) => (
+              <motion.p
+                key={i}
+                className="text-slate-400 leading-relaxed text-sm"
+                initial={{ opacity: 0, x: -20 }}
+                animate={inView ? { opacity: 1, x: 0 } : {}}
+                transition={{ delay: 0.25 + i * 0.1, duration: 0.5 }}
+              >
+                {line}
+              </motion.p>
+            ))}
             <motion.div
-              className="relative"
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.3 }}
+              className="flex flex-wrap gap-3 pt-2"
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 1 } : {}}
+              transition={{ delay: 0.7 }}
             >
-              <div className="aspect-square rounded-2xl bg-gradient-to-br from-violet-500/20 via-purple-500/20 to-pink-500/20 p-8 backdrop-blur-sm border border-violet-500/20">
-                <div className="w-full h-full rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center relative overflow-hidden">
-                  <div className="text-6xl">👨‍💻</div>
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-violet-500/20 to-purple-500/20"
-                    animate={{
-                      opacity: [0.3, 0.6, 0.3],
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
+              {[
+                { Icon: MapPin, text: "Bangalore, India", color: "#a855f7" },
+                { Icon: Calendar, text: "Born in the 90s", color: "#ec4899" },
+                { Icon: Smile, text: "Optimist at heart", color: "#f59e0b" },
+              ].map(({ Icon, text, color }) => (
+                <div key={text} className="flex items-center gap-2 text-sm text-slate-400">
+                  <Icon className="w-4 h-4" style={{ color }} />
+                  {text}
                 </div>
-              </div>
+              ))}
             </motion.div>
           </motion.div>
 
-          {/* Personal Stats */}
-          <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {personalStats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                className="text-center p-6 rounded-xl bg-slate-800/50 backdrop-blur-sm border border-violet-500/20 hover:border-violet-500/40 transition-all duration-300"
-                whileHover={{ scale: 1.05, y: -5 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-              >
-                <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${stat.color} flex items-center justify-center mx-auto mb-4`}>
-                  <stat.icon className="w-6 h-6 text-white" />
+          {/* Right — visual card */}
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ delay: 0.3, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <SpotlightCard
+              className="aspect-square p-8"
+              spotlightColor="rgba(168,85,247,0.12)"
+            >
+              <div className="w-full h-full rounded-2xl flex flex-col items-center justify-center gap-6 relative overflow-hidden"
+                style={{ background: "rgba(255,255,255,0.02)" }}>
+                {/* Giant emoji */}
+                <motion.div
+                  className="text-7xl"
+                  animate={{ y: [0, -8, 0], rotate: [0, 3, -3, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  👨‍💻
+                </motion.div>
+                {/* Quote */}
+                <div className="text-center px-4">
+                  <p className="text-slate-400 text-sm italic leading-relaxed">
+                    "Life is not about finding yourself.<br />Life is about creating yourself."
+                  </p>
+                  <p className="text-xs mt-2" style={{ color: "#a855f7" }}>— A motto I live by</p>
                 </div>
-                <div className="text-2xl font-bold text-gradient mb-2">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{stat.label}</div>
+                {/* Animated glow layer */}
+                <motion.div
+                  className="absolute inset-0 rounded-2xl"
+                  style={{ background: "linear-gradient(135deg, rgba(168,85,247,0.08), rgba(236,72,153,0.05), transparent)" }}
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                />
+              </div>
+            </SpotlightCard>
+          </motion.div>
+        </div>
+
+        {/* Animated stat counters */}
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20"
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.4, duration: 0.6 }}
+        >
+          {PERSONAL_STATS.map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              className="text-center p-5 rounded-2xl border"
+              style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.07)" }}
+              whileHover={{ scale: 1.05, borderColor: stat.color + "44" }}
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={inView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ delay: 0.4 + i * 0.08, duration: 0.5, type: "spring" }}
+            >
+              <div className="text-2xl mb-2">{stat.emoji}</div>
+              <div className="text-3xl font-black mb-1" style={{ color: stat.color }}>{stat.value}</div>
+              <div className="text-xs text-slate-500">{stat.label}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Values grid */}
+        <div>
+          <motion.h3
+            className="text-2xl font-bold text-white text-center mb-8"
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.5 }}
+          >
+            What I Value
+          </motion.h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {PERSONAL_VALUES.map((value, i) => (
+              <motion.div
+                key={value.title}
+                className="p-5 rounded-2xl border group"
+                style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.07)" }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.5 + i * 0.07, duration: 0.5 }}
+                whileHover={{ scale: 1.02, borderColor: value.color + "44", background: value.color + "07" }}
+              >
+                <div className="text-2xl mb-2">{value.icon}</div>
+                <h4 className="text-sm font-bold mb-1.5 transition-colors" style={{ color: value.color }}>{value.title}</h4>
+                <p className="text-xs text-slate-500 leading-relaxed">{value.description}</p>
               </motion.div>
             ))}
-          </motion.div>
-
-          {/* Personal Values */}
-          <motion.div variants={itemVariants} className="space-y-8">
-            <h3 className="text-2xl font-bold text-center text-foreground">What I Value</h3>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {personalValues.map((value, index) => (
-                <motion.div
-                  key={value.title}
-                  className="p-6 rounded-xl bg-slate-800/30 backdrop-blur-sm border border-violet-500/20 hover:border-violet-500/40 transition-all duration-300"
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.7 + index * 0.1 }}
-                >
-                  <h4 className="text-lg font-semibold text-violet-400 mb-3">{value.title}</h4>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{value.description}</p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Fun Quote */}
-          <motion.div 
-            variants={itemVariants}
-            className="text-center py-12"
-          >
-            <blockquote className="text-2xl md:text-3xl font-light text-gradient italic max-w-4xl mx-auto">
-              "Life is not about finding yourself. Life is about creating yourself."
-            </blockquote>
-            <p className="text-muted-foreground mt-4">— A motto I live by</p>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

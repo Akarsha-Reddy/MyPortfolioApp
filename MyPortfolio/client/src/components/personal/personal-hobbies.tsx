@@ -1,215 +1,187 @@
-import { motion } from "framer-motion";
-import { useInView } from "react-intersection-observer";
-import { Heart, Coffee, Music, Book, Camera, Gamepad2, Plane, Palette } from "lucide-react";
+import { useRef } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 
-const hobbies = [
-  {
-    id: 1,
-    name: "Coffee Exploration",
-    description: "Discovering unique coffee shops and brewing methods. There's something magical about that perfect cup that starts the day right.",
-    icon: Coffee,
-    category: "Lifestyle",
-    color: "from-amber-500 to-orange-600",
-    bgColor: "from-amber-500/20 to-orange-600/20",
-  },
-  {
-    id: 2,
-    name: "Music Discovery",
-    description: "Always hunting for new artists and genres. Music is the soundtrack to life, and I love curating playlists for different moods.",
-    icon: Music,
-    category: "Creative",
-    color: "from-purple-500 to-pink-600",
-    bgColor: "from-purple-500/20 to-pink-600/20",
-  },
-  {
-    id: 3,
-    name: "Reading & Learning",
-    description: "From fiction to philosophy, books open new worlds. Currently exploring mindfulness and personal development literature.",
-    icon: Book,
-    category: "Intellectual",
-    color: "from-blue-500 to-indigo-600",
-    bgColor: "from-blue-500/20 to-indigo-600/20",
-  },
-  {
-    id: 4,
-    name: "Photography",
-    description: "Capturing moments that tell stories. Street photography and nature shots are my favorite ways to freeze time.",
-    icon: Camera,
-    category: "Creative",
-    color: "from-emerald-500 to-teal-600",
-    bgColor: "from-emerald-500/20 to-teal-600/20",
-  },
-  {
-    id: 5,
-    name: "Gaming",
-    description: "From indie narratives to strategy games, gaming offers incredible storytelling and problem-solving challenges.",
-    icon: Gamepad2,
-    category: "Entertainment",
-    color: "from-red-500 to-rose-600",
-    bgColor: "from-red-500/20 to-rose-600/20",
-  },
-  {
-    id: 6,
-    name: "Travel Planning",
-    description: "Dreaming up adventures and exploring new cultures. Even planning trips brings joy and excitement to everyday life.",
-    icon: Plane,
-    category: "Adventure",
-    color: "from-cyan-500 to-blue-600",
-    bgColor: "from-cyan-500/20 to-blue-600/20",
-  },
-  {
-    id: 7,
-    name: "Creative Writing",
-    description: "Expressing thoughts through words, whether it's journaling, poetry, or short stories. Writing is thinking made visible.",
-    icon: Palette,
-    category: "Creative",
-    color: "from-violet-500 to-purple-600",
-    bgColor: "from-violet-500/20 to-purple-600/20",
-  },
-  {
-    id: 8,
-    name: "Mindfulness Practice",
-    description: "Daily meditation and reflection help me stay grounded. It's amazing how 10 minutes of stillness can transform a day.",
-    icon: Heart,
-    category: "Wellness",
-    color: "from-pink-500 to-rose-600",
-    bgColor: "from-pink-500/20 to-rose-600/20",
-  },
+const HOBBIES = [
+  { emoji: "☕", name: "Coffee Exploration", category: "Lifestyle", description: "Discovering unique coffee shops and brewing methods. There's something magical about that perfect cup.", color: "#f59e0b", now: "Experimenting with pour-over and Ethiopian single origins" },
+  { emoji: "🎵", name: "Music Discovery", category: "Creative", description: "Always hunting for new artists and genres. Music is the soundtrack to life.", color: "#a855f7", now: "Discovering lo-fi jazz and indie folk perfect for coding" },
+  { emoji: "📚", name: "Reading & Learning", category: "Intellectual", description: "From fiction to philosophy, books open new worlds. Currently into mindfulness literature.", color: "#0ea5e9", now: "\"The Power of Now\" + \"Atomic Habits\"" },
+  { emoji: "📸", name: "Photography", category: "Creative", description: "Capturing moments that tell stories. Street photography and nature shots are my favorites.", color: "#10b981", now: "Exploring golden hour portrait shots around Bangalore" },
+  { emoji: "🎮", name: "Gaming", category: "Entertainment", description: "From indie narratives to strategy games — incredible storytelling and problem-solving.", color: "#ef4444", now: "Currently playing indie narrative games on weekends" },
+  { emoji: "✈️", name: "Travel Planning", category: "Adventure", description: "Dreaming up adventures and exploring new cultures. Even planning brings joy.", color: "#06b6d4", now: "Planning a trip to Ladakh and Coorg this year" },
+  { emoji: "✍️", name: "Creative Writing", category: "Creative", description: "Expressing thoughts through words — journaling, poetry, short stories.", color: "#8b5cf6", now: "Writing a travel journal + personal essay series" },
+  { emoji: "🧘", name: "Mindfulness", category: "Wellness", description: "Daily meditation and reflection. 10 minutes of stillness transforms everything.", color: "#ec4899", now: "Daily 10-min morning meditation streak: 🔥 43 days" },
 ];
 
+const STATS = [
+  { emoji: "☕", value: "∞", label: "Cups of Coffee", color: "#f59e0b" },
+  { emoji: "📖", value: "23", label: "Books This Year", color: "#0ea5e9" },
+  { emoji: "🎵", value: "47", label: "Fav Playlists", color: "#a855f7" },
+  { emoji: "📸", value: "2.1k", label: "Photos Captured", color: "#10b981" },
+];
+
+function HobbyCard({ hobby, index, inView }: { hobby: typeof HOBBIES[number]; index: number; inView: boolean }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ delay: 0.08 * index, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <SpotlightCard
+        className="h-full p-5 transition-all duration-300 group cursor-default"
+        spotlightColor={hobby.color + "18"}
+      >
+        <div className="flex items-start gap-3 mb-3">
+          <motion.div
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+            style={{ background: hobby.color + "18", border: `1px solid ${hobby.color}30` }}
+            whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
+            transition={{ duration: 0.4 }}
+          >
+            {hobby.emoji}
+          </motion.div>
+          <div>
+            <span
+              className="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wider uppercase mb-1"
+              style={{ background: hobby.color + "15", color: hobby.color }}
+            >
+              {hobby.category}
+            </span>
+            <h3 className="text-sm font-bold text-white leading-tight group-hover:opacity-90">{hobby.name}</h3>
+          </div>
+        </div>
+        <p className="text-xs text-slate-500 leading-relaxed mb-3">{hobby.description}</p>
+        <motion.div
+          className="text-[10px] px-2.5 py-1.5 rounded-lg border font-medium"
+          style={{ background: hobby.color + "0A", borderColor: hobby.color + "25", color: hobby.color }}
+          whileHover={{ scale: 1.02 }}
+        >
+          🔴 Now: {hobby.now}
+        </motion.div>
+      </SpotlightCard>
+    </motion.div>
+  );
+}
+
 export default function PersonalHobbies() {
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        delayChildren: 0.2,
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { duration: 0.8, ease: "easeOut" }
-    }
-  };
+  const sectionRef = useRef<HTMLElement>(null);
+  const inView = useInView(sectionRef, { once: true, margin: "-80px" });
 
   return (
-    <section id="personal-hobbies" className="py-20 relative">
-      <div className="max-w-6xl mx-auto px-6">
+    <section
+      ref={sectionRef}
+      id="personal-hobbies"
+      className="py-28 relative overflow-hidden"
+      style={{ background: "linear-gradient(180deg, hsl(222,84%,4.9%) 0%, rgba(168,85,247,0.04) 50%, hsl(222,84%,4.9%) 100%)" }}
+    >
+      {/* Ambient orbs */}
+      <div className="absolute inset-0 pointer-events-none">
         <motion.div
-          ref={ref}
-          variants={containerVariants}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-          className="space-y-12"
+          className="absolute top-0 right-1/4 w-80 h-80 rounded-full blur-3xl opacity-[0.07]"
+          style={{ background: "radial-gradient(circle, #a855f7, transparent)" }}
+          animate={{ scale: [1, 1.3, 1] }}
+          transition={{ duration: 10, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute bottom-0 left-1/4 w-64 h-64 rounded-full blur-3xl opacity-[0.06]"
+          style={{ background: "radial-gradient(circle, #ec4899, transparent)" }}
+          animate={{ scale: [1.2, 1, 1.2] }}
+          transition={{ duration: 8, repeat: Infinity }}
+        />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 relative z-10">
+
+        {/* Header */}
+        <motion.div
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 40 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          {/* Section Header */}
-          <motion.div variants={itemVariants} className="text-center space-y-4">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Heart className="w-8 h-8 text-violet-400" />
-              <h2 className="text-4xl md:text-5xl font-bold text-gradient">Hobbies & Interests</h2>
-            </div>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              The things that spark joy, fuel creativity, and make life worth living
-            </p>
-          </motion.div>
-
-          {/* Hobbies Grid */}
-          <motion.div 
-            variants={itemVariants}
-            className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          <motion.span
+            className="inline-block text-xs font-bold tracking-[0.3em] uppercase mb-4 px-4 py-1.5 rounded-full border"
+            style={{ color: "#a855f7", borderColor: "rgba(168,85,247,0.3)", background: "rgba(168,85,247,0.08)" }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={inView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ delay: 0.1 }}
           >
-            {hobbies.map((hobby, index) => (
-              <motion.div
-                key={hobby.id}
-                className="group relative overflow-hidden rounded-xl bg-slate-800/30 backdrop-blur-sm border border-violet-500/20 hover:border-violet-500/40 transition-all duration-300"
-                whileHover={{ scale: 1.02, y: -5 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                {/* Background gradient */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${hobby.bgColor} opacity-50 group-hover:opacity-70 transition-opacity duration-300`} />
-                
-                <div className="relative p-6 space-y-4">
-                  {/* Icon */}
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${hobby.color} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <hobby.icon className="w-6 h-6 text-white" />
-                  </div>
-
-                  {/* Category Badge */}
-                  <span className="inline-block px-2 py-1 rounded-md bg-slate-700/50 text-xs text-violet-400 font-medium">
-                    {hobby.category}
-                  </span>
-
-                  {/* Title */}
-                  <h3 className="text-lg font-bold text-foreground group-hover:text-violet-400 transition-colors duration-300">
-                    {hobby.name}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {hobby.description}
-                  </p>
-                </div>
-
-                {/* Hover effect overlay */}
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-violet-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Personal Note */}
-          <motion.div 
-            variants={itemVariants}
-            className="text-center py-12 bg-slate-800/20 rounded-2xl border border-violet-500/20"
+            What I Love
+          </motion.span>
+          <h2 className="text-5xl md:text-6xl font-black text-white">
+            Hobbies &{" "}
+            <span style={{ background: "linear-gradient(135deg, #a855f7, #ec4899)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              Passions
+            </span>
+          </h2>
+          <motion.p
+            className="text-slate-400 text-lg mt-4 max-w-lg mx-auto"
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.3 }}
           >
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <span className="text-4xl">✨</span>
-              <h3 className="text-2xl font-bold text-foreground">Life is an Adventure</h3>
-              <span className="text-4xl">✨</span>
-            </div>
-            <p className="text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-6">
-              These hobbies aren't just ways to pass time—they're windows into different aspects of life. 
-              Each one teaches me something new about myself and the world around me. Whether it's the patience 
-              required for the perfect brew, the creativity sparked by a good book, or the mindfulness found in 
-              a quiet moment, every interest adds color to my story.
-            </p>
-            <p className="text-violet-400 font-medium">
-              "The best way to find out if you can trust somebody is to trust them." — Life lessons from my hobbies
-            </p>
-          </motion.div>
+            The things that spark joy, fuel creativity, and make life worth living
+          </motion.p>
+        </motion.div>
 
-          {/* Current Focus */}
-          <motion.div variants={itemVariants} className="grid md:grid-cols-3 gap-6">
-            <div className="text-center p-6 rounded-xl bg-gradient-to-br from-amber-500/10 to-orange-600/10 border border-amber-500/20">
-              <Coffee className="w-8 h-8 text-amber-400 mx-auto mb-4" />
-              <h4 className="text-lg font-semibold text-foreground mb-2">Currently Brewing</h4>
-              <p className="text-muted-foreground text-sm">Experimenting with pour-over techniques and exploring Ethiopian single origins</p>
-            </div>
-            <div className="text-center p-6 rounded-xl bg-gradient-to-br from-blue-500/10 to-indigo-600/10 border border-blue-500/20">
-              <Book className="w-8 h-8 text-blue-400 mx-auto mb-4" />
-              <h4 className="text-lg font-semibold text-foreground mb-2">Currently Reading</h4>
-              <p className="text-muted-foreground text-sm">"The Power of Now" by Eckhart Tolle and "Atomic Habits" by James Clear</p>
-            </div>
-            <div className="text-center p-6 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-600/10 border border-purple-500/20">
-              <Music className="w-8 h-8 text-purple-400 mx-auto mb-4" />
-              <h4 className="text-lg font-semibold text-foreground mb-2">Currently Listening</h4>
-              <p className="text-muted-foreground text-sm">Discovering lo-fi jazz and indie folk artists that create the perfect coding atmosphere</p>
-            </div>
-          </motion.div>
+        {/* Stats row */}
+        <motion.div
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14"
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.2, duration: 0.6 }}
+        >
+          {STATS.map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              className="text-center p-4 rounded-2xl border"
+              style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.07)" }}
+              whileHover={{ scale: 1.04, borderColor: stat.color + "44" }}
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={inView ? { opacity: 1, scale: 1 } : {}}
+              transition={{ delay: 0.15 + i * 0.08, duration: 0.5, type: "spring" }}
+            >
+              <div className="text-2xl mb-1">{stat.emoji}</div>
+              <div className="text-2xl font-black" style={{ color: stat.color }}>{stat.value}</div>
+              <div className="text-xs text-slate-500 mt-0.5">{stat.label}</div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Hobbies 4-col grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-14">
+          {HOBBIES.map((hobby, i) => (
+            <HobbyCard key={hobby.name} hobby={hobby} index={i} inView={inView} />
+          ))}
+        </div>
+
+        {/* Quote banner */}
+        <motion.div
+          className="text-center p-10 rounded-2xl border relative overflow-hidden"
+          style={{ background: "rgba(168,85,247,0.04)", borderColor: "rgba(168,85,247,0.15)" }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ delay: 0.6, duration: 0.7 }}
+        >
+          {/* Animated bg shimmer */}
+          <motion.div
+            className="absolute inset-0 opacity-30"
+            style={{ background: "linear-gradient(135deg, rgba(168,85,247,0.08), rgba(236,72,153,0.06), transparent)" }}
+            animate={{ opacity: [0.2, 0.4, 0.2] }}
+            transition={{ duration: 4, repeat: Infinity }}
+          />
+          <div className="relative z-10">
+            <div className="text-4xl mb-4">✨</div>
+            <h3 className="text-2xl font-bold text-white mb-3">Life is an Adventure</h3>
+            <p className="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed mb-4">
+              These hobbies aren't just ways to pass time — they're windows into different aspects of life.
+              Each one teaches me something new about myself and the world. Whether it's patience from brewing
+              the perfect cup, creativity sparked by a book, or mindfulness in a quiet moment.
+            </p>
+            <span className="text-sm font-medium" style={{ color: "#a855f7" }}>
+              "The best way to find yourself is to lose yourself in what you love." ✨
+            </span>
+          </div>
         </motion.div>
       </div>
     </section>
